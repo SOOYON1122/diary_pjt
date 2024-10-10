@@ -1,0 +1,69 @@
+/* Noto Sans KR*/
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 100;
+    src: url('/static/fonts/NotoSansKR-Thin.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 200;
+    src: url('/static/fonts/NotoSansKR-ExtraLight.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 300;
+    src: url('/static/fonts/NotoSansKR-Light.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 400;
+    src: url('/static/fonts/NotoSansKR-Regular.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 500;
+    src: url('/static/fonts/NotoSansKR-Medium.woff') format('woff'),
+    	/* ttf파일 추가시 */
+    	 url('/static/fonts/NotoSansKR-Medium.ttf') format('truetype');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 600;
+    src: url('/static/fonts/NotoSansKR-SemiBold.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 700;
+    src: url('/static/fonts/NotoSansKR-Bold.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 800;
+    src: url('/static/fonts/NotoSansKR-ExtraBold.woff') format('woff');
+}
+@font-face {
+    font-family: "NotoSansKR";
+    font-weight: 900;
+    src: url('/static/fonts/NotoSansKR-Black.woff') format('woff');
+}
+
+
+/*Laundry Gothic*/
+
+@font-face {
+    font-family: 'TTLaundryGothicB';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2403-2@1.0/TTLaundryGothicB.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* UhBeeSeulvely */
+@font-face {
+    font-family: 'UhBeeSeulvely';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_five@.2.0/UhBeeSeulvely.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    }

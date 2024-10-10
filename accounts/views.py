@@ -10,5 +10,5 @@ def login(request):
 def logout(request):
     pass
 
-def mypage(request):
+def mypage(request, pk):
     pass

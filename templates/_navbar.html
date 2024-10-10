@@ -1,0 +1,36 @@
+<nav class="navbar">
+  <div class="navbar__logo">도토리</div>
+  <ul class="navbar__menu">
+    <a href="{% url 'diaries:index' %}">
+      <li class="{% if request.path == '' %}current-page{% endif %}">HOME</li>
+    </a>    
+    <a href="{% url 'diaries:create_diary' %}">
+      <li class="{% if request.path == '/diaries/add-diary/' %}current-page{% endif %}">다이어리생성</li>
+    </a>
+    <a href="{% url 'diaries:my_diary' %}">
+      <li class="{% if request.path == '/diaries/my-diary/' %}current-page{% endif %}">내 다이어리</li>
+    </a>
+    <a href="{% url 'friends:add_friend' %}">
+      <li class="{% if request.path == '/friends/add-friend/' %}current-page{% endif %}">친구추가</li>
+    </a>
+    <a href="{% url 'friends:my_friends' %}">
+      <li class="{% if request.path == '/friends/my-friends/' %}current-page{% endif %}">친구목록</li>
+    </a>
+    <a href="{% url 'accounts:mypage' %}">
+      <li class="{% if request.path == '/accounts/my-page/' %}current-page{% endif %}">마이페이지</li>
+    </a>
+    <a href="{% url 'accounts:logout' %}">
+      <li>로그아웃</li>
+    </a>
+    <a href="{% url 'accounts:signup' %}">
+      <li class="{% if request.path == '/accounts/sign-up/' %}current-page{% endif %}">회원가입</li>
+    </a>
+    <a href="{% url 'accounts:login' %}">
+      <li class="{% if request.path == '/accounts/log-in/' %}current-page{% endif %}">로그인</li>
+    </a>
+  </ul>
+  
+  <a href="#" class="navbar__toggleBtn">
+    <i class="fa-solid fa-bars fa-xl" style="color: #F5F5F5;"></i>
+  </a>
+</nav>
