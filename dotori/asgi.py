@@ -1,5 +1,5 @@
 """
-ASGI config for diarypjt project.
+ASGI config for dotori project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'diarypjt.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dotori.settings')
 
 application = get_asgi_application()
