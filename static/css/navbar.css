@@ -1,0 +1,175 @@
+:root {
+    --background-color: #50321E;
+    --accent-color: #b48c64;
+    --icons-color: #F5F5F5;
+    --bodybackground-color: #F5F5F5;
+}
+  
+.navbar {
+    position: fixed;
+    top: 0;  /* 화면 상단에 고정 */
+    z-index: 9999; 
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: var(--background-color);
+    padding: 20px 12px;
+    font-family: 'NotoSansKR';
+    padding-left: 0;
+}
+
+.navbar__logo{
+    display: none;
+    color: #F5F5F5;
+    padding-left: 0;
+}
+
+.navbar__menu {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding-left: 0;
+}
+
+.navbar__menu li {
+    position: relative;
+    font-family: 'TTLaundryGothicB';
+    font-size: 1.5rem;
+    color: #F5F5F5;
+    padding: 8px 40px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar__menu li::after {
+    content: ''; 
+    position: absolute;
+    display: inline-block;
+    width: 0;
+    height: 2px;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #111111;
+    transition: width 0.3s ease;
+}
+
+.navbar__icons {
+    list-style: none;
+    display: flex;
+    color: var(--icons-color);
+    margin: 0;
+    padding-left: 0;
+}
+
+.navbar__menu li:hover::after {
+    width: 50%;
+}
+
+.navbar__menu li:hover {
+    background-color: var(--accent-color);
+    color: #111111;
+}
+
+.navbar__menu .current-page::after {
+    width: 50%;
+}
+
+.navbar__menu .current-page {
+    background-color: var(--accent-color);
+    color: #111111;
+}
+
+.navbar__icons li {
+    padding: 8px 12px;
+    margin: 0;
+}
+
+
+.navbar__toggleBtn {
+    color: var(--accent-color);
+    position: absolute;
+    right: 15px;
+    display: none;
+    z-index: 1; /* 버튼이 다른 요소들 위에 오도록 설정 */
+}
+
+@media screen and (max-width: 700px) {
+    .navbar__toggleBtn {
+        display: block; /* 모바일에서 버튼 보이기 */
+        /* 위치를 조정하여 메뉴가 열려도 고정되도록 */
+        position: absolute;
+        right: 30px; 
+        top: 30px; /* 적절한 위치 조정 */
+    }
+    
+    .navbar__logo {
+        display: block;
+        font-family: 'TTLaundryGothicB';
+        width: 100%;
+        color: #F5F5F5;
+        text-align: center;
+        font-size: 2.5rem;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 0;
+    }
+    
+    .navbar__menu {
+        max-height: 0; /* 초기 상태에서 높이를 0으로 설정 */
+        overflow: hidden; /* 넘치는 내용을 숨김 */
+        transition: max-height 0.3s ease, opacity 0.3s ease; /* 애니메이션 효과 추가 */
+        opacity: 0; /* 초기 상태에서 투명도 0 */
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .navbar__menu.active {
+        margin-top: 20px;
+        max-height: 500px; /* 메뉴가 펼쳐질 때 최대 높이를 설정 */
+        opacity: 1; /* 투명도 1로 설정 */
+    }
+    .navbar__menu a {
+        width: 100%;
+        display: block;
+        display: flex;
+        justify-content: center;
+    }
+
+    .navbar__menu li {
+        width: 100%;
+        padding: 15px 8px;
+        text-align: center;
+        display: flex;
+        justify-content: center; 
+    }
+
+    .navbar__menu li:hover {
+        background-color: var(--accent-color);
+        color: #111111;
+    }
+
+    .navbar__menu li:hover::after {
+        width: 20%;
+    }
+
+    .navbar__menu .current-page::after {
+        width: 20%;
+    }
+    
+    .navbar__icons {
+        display: none;
+        justify-content: center;
+    }
+}
+
+
