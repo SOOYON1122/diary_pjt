@@ -7,4 +7,4 @@ def addfriend(request):
 
 
 def myfriends(request):
-  pass
+  return render(request, 'friends/myfriends.html')
