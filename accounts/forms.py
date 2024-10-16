@@ -11,6 +11,8 @@ class CustomUserCreationForm(UserCreationForm):
             'nickname',
             'profile_image',
         )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):

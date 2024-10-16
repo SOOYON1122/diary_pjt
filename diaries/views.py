@@ -10,7 +10,7 @@ def index(request):
 
 def creatediary(request):
   if request.method == 'POST':
-    form = DiaryForm(request.POST, request.FILES)
+    form = DiaryForm(request.POST, request.FILES, user=request.user)
     if form.is_valid():
       diary = form.save(commit=False)
       diary.user = request.user
@@ -23,6 +23,7 @@ def creatediary(request):
     'form': form,
   }
   return render(request, 'diaries/creatediary.html', context)
+
 
 
 def mydiary(request):
