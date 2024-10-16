@@ -7,7 +7,17 @@
 {% block content %}
 <main class="index-main">
   <h1>마이 페이지</h1>
+  <p><b>♡환영합니다♡</b></p>
+  <img src="{{ user.profile_image.url }}" alt="user profile image">
+  <p>{{ user.nickname }}</p>
+  <ul>
+    <li>
+        <a href="{% url 'accounts:update' user.pk %}">회원정보 변경</a>
+    </li>
+    <li>
+        <a href="{% url 'accounts:delete' user.pk %}">회원탈퇴</a>
+    </li>
+  </ul>
 </main>
-<a href="{% url 'accounts:update' user.pk %}">회원정보 변경</a>
 {% endblock content %}
 {% block js %}{% endblock js %}

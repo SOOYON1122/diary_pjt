@@ -54,7 +54,7 @@ def mypage(request, user_pk):
 @login_required
 def update(request, user_pk):
     if request.method == "POST":
-        form_user = CustomUserChangeForm(request.POST, instance=request.user)
+        form_user = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         form_password = PasswordChangeForm(request.user, request.POST)
         if form_user.is_valid() and form_password.is_valid():
             form_user.save()
@@ -69,3 +69,8 @@ def update(request, user_pk):
         'form_password' : form_password,
     }
     return render(request, 'accounts/update.html', context)
+
+@login_required
+def delete(request, user_pk):
+    request.user.delete()
+    return redirect('diaries:index')
