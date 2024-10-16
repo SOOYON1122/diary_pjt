@@ -6,7 +6,11 @@ from django.forms import inlineformset_factory
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from .models import Diary, Note, NoteImage
+from friends.models import Friendship
 
+
+
+User = get_user_model()
 
 class DiaryForm(forms.ModelForm):
   class Meta:
@@ -28,7 +32,13 @@ class DiaryForm(forms.ModelForm):
     super().__init__(*args, **kwargs)
 
     if self.current_user:
-      self.fields['diary_friends'].queryset = self.current_user.friends.all()  # friends 관계가 설정되어 있다고 가정
+      # 현재 사용자의 친구 요청을 기반으로 친구 목록 가져오기
+      friends_queryset = Friendship.objects.filter(
+        from_user=self.current_user,
+        is_friend=True
+      ).values_list('to_user', flat=True)
+
+      self.fields['diary_friends'].queryset = User.objects.filter(id__in=friends_queryset)
 
   def clean_diary_friends(self):
     friends = self.cleaned_data.get('diary_friends')
@@ -84,8 +94,6 @@ NoteImageFormSet = inlineformset_factory(
   validate_max=True
 )
 
-
-User = get_user_model()
 
 class NoteImageFormSetTest(TestCase):
   def setUp(self):

@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block content %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/creatediary.css' %}">
+{% endblock styles %}
 
-<form action="{% url 'diaries:create_diary' %}" method="POST">
+{% block content %}
+<main class="creatediary-main">
+<form action="{% url 'diaries:create_diary' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
   {{form.as_p}}
   <input type="submit" value="다이어리생성">
 </form>
-
+</main>
 {% endblock content %}

@@ -8,7 +8,7 @@ import os
 def note_image_path(instance, filename):
   ext = filename.split('.')[-1]
   filename = f'{uuid.uuid4()}.{ext}'
-  return f'notes/{instance.note.id}/{filename}'
+  return f'notes/{instance.user.username}/{filename}'
 
 
 # 다이어리 모델
@@ -23,7 +23,7 @@ class Diary(models.Model):
   diary_title = models.CharField(max_length=30)
   diary_content = models.TextField()
   diary_category = models.CharField(max_length=30)
-  diary_img = models.ImageField(upload_to='diary_images/', null=True, blank=True)
+  diary_img = models.ImageField(upload_to=note_image_path, null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   diary_friends = models.ManyToManyField(

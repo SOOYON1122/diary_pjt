@@ -1,0 +1,12 @@
+.creatediary-main {
+  width: 80%;
+  min-width: 500px;
+  height: calc(100vh - 90px);
+  margin: 0 auto;
+  padding-top: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
