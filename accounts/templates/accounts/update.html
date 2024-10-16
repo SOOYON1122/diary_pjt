@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% endblock title %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock styles %}
+{% block content %}
+<main class="index-main">
+  <h1>회원정보 변경</h1>
+</main>
+<form action="{% url 'accounts:update' user.pk %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form_user.as_p }}
+    {{ form_password.as_p }}
+    <input type="submit" value="변경하기">
+</form>
+{% endblock content %}
+{% block js %}{% endblock js %}

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm
@@ -48,4 +49,23 @@ def logout(request):
 
 @login_required
 def mypage(request, user_pk):
-    pass
+    return render(request, 'accounts/mypage.html')
+
+@login_required
+def update(request, user_pk):
+    if request.method == "POST":
+        form_user = CustomUserChangeForm(request.POST, instance=request.user)
+        form_password = PasswordChangeForm(request.user, request.POST)
+        if form_user.is_valid() and form_password.is_valid():
+            form_user.save()
+            user = form_password.save()
+            update_session_auth_hash(request, user)
+            return redirect('accounts:mypage', user.pk)
+    else:
+        form_user = CustomUserChangeForm(instance=request.user)
+        form_password = PasswordChangeForm(request.user)
+    context = {
+        'form_user' : form_user,
+        'form_password' : form_password,
+    }
+    return render(request, 'accounts/update.html', context)
