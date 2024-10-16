@@ -16,12 +16,14 @@
     <a href="{% url 'friends:my_friends' %}">
       <li class="{% if request.path == '/friends/my-friends/' %}current-page{% endif %}">친구목록</li>
     </a>
-    <a href="{% url 'accounts:mypage' %}">
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'accounts:mypage' user.pk%}">
       <li class="{% if request.path == '/accounts/my-page/' %}current-page{% endif %}">마이페이지</li>
     </a>
     <a href="{% url 'accounts:logout' %}">
       <li>로그아웃</li>
     </a>
+    {% endif %}
     <a href="{% url 'accounts:signup' %}">
       <li class="{% if request.path == '/accounts/sign-up/' %}current-page{% endif %}">회원가입</li>
     </a>
