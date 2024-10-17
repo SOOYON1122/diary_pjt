@@ -8,6 +8,40 @@
 {% block content %}
 <main class="myfriends-main">
   <h1>여기는 친구목록</h1>
+
+  <h3>내 친구</h3>
+  <ul>
+    {% for friend in friends %}
+      <li>{{ friend.from_user.nickname }} ({{ friend.from_user.username }})<br>
+      마지막 로그인: {{ friend.from_user.last_login | date:"y년m월d일  H시i분"}}</li>
+    {% endfor %}
+  </ul>
+
+  <h3>대기중인 요청</h3>
+  <ul>
+    {% for friend in waitfriends %}
+      <li>{{ friend.from_user.nickname }} ({{ friend.from_user.username }})</li>
+      <form action="{% url 'friends:accept_friend' friend.from_user.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">수락</button>
+      </form>
+      <form action="{% url 'friends:reject_friend' friend.from_user.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">거절</button>
+      </form>
+    {% endfor %}
+  </ul>
+
 </main>
 {% endblock content %}
-{% block js %}{% endblock js %}
+{% block js %}
+
+{% if messages %}
+  <script>
+    {% for message in messages %}
+      alert("{{ message }}");
+    {% endfor %}
+  </script>
+{% endif %}
+
+{% endblock js %}

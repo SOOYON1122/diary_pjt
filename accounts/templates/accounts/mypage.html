@@ -8,7 +8,11 @@
 <main class="index-main">
   <h1>마이 페이지</h1>
   <p><b>♡환영합니다♡</b></p>
-  <img src="{{ user.profile_image.url }}" alt="user profile image">
+  {% if user.profile_image %}
+    <img src="{{ user.profile_image.url }}" alt="user profile image" style="width:300px; object-fit:cover;">
+  {% else %}
+    <img src="{% static "img/dotori_logo.png" %}" alt="user default image" style="width:300px; object-fit:cover;">
+  {% endif %}
   <p>{{ user.nickname }}</p>
   <ul>
     <li>

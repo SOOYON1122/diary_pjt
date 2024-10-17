@@ -9,4 +9,12 @@
   <h1>여기는 인덱스</h1>
 </main>
 {% endblock content %}
-{% block js %}{% endblock js %}
+{% block js %}
+  {% if messages %}
+    <script>
+      {% for message in messages %}
+        alert("{{ message }}");
+      {% endfor %}
+    </script>
+  {% endif %}
+{% endblock js %}

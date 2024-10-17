@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% endblock title %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/addfriend.css' %}">
+{% endblock styles %}
+{% block content %}
+<main class="addfriend-main">
+  <form id="friend-search-form" method="POST" action="{% url 'friends:add_friend' %}">
+    {% csrf_token %}
+    
+    <label for="search-category">검색 기준:</label>
+    <select id="search-category" name="search_category">
+      <option value="username">아이디</option>
+      <option value="email">이메일</option>
+    </select>
+    
+    <label for="search-query">친구 검색:</label>
+    <input type="text" id="search-query" placeholder="아이디 또는 이메일 입력" autocomplete="off">
+    <ul id="search-results"></ul>
+    
+    <input type="hidden" id="selected-user-id" name="to_user">
+    <input type="submit" value="친구 신청">
+  </form>
+</main>
+{% endblock content %}
+{% block js %}
+  <script src="{% static "js/searchfriend.js" %}"></script>
+  {% if messages %}
+  <script>
+    {% for message in messages %}
+      alert("{{ message }}");
+    {% endfor %}
+  </script>
+  {% endif %}
+{% endblock js %}
