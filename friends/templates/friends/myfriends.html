@@ -12,9 +12,15 @@
   <h3>내 친구</h3>
   <ul>
     {% for friend in friends %}
-      <li>{{ friend.from_user.nickname }} ({{ friend.from_user.username }})<br>
-      마지막 로그인: {{ friend.from_user.last_login | date:"y년m월d일  H시i분"}}</li>
-      <button onclick="deleteFriendConfirm('{{friend.from_user.id}}', '{{friend.from_user.nickname}}')">삭제</button>
+      {% if friend.from_user.id == request.user.id %}
+        <li>{{ friend.to_user.nickname }} ({{ friend.to_user.username }})<br>
+        마지막 로그인: {{ friend.to_user.last_login | date:"y년m월d일  H시i분"}}</li>
+        <button onclick="deleteFriendConfirm('{{friend.to_user.id}}', '{{friend.to_user.nickname}}')">삭제</button>
+      {% else %}
+        <li>{{ friend.from_user.nickname }} ({{ friend.from_user.username }})<br>
+        마지막 로그인: {{ friend.from_user.last_login | date:"y년m월d일  H시i분"}}</li>
+        <button onclick="deleteFriendConfirm('{{friend.from_user.id}}', '{{friend.from_user.nickname}}')">삭제</button>
+      {% endif %}
     {% endfor %}
   </ul>
 

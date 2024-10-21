@@ -93,9 +93,20 @@ def addfriend(request):
 def myfriends(request):
   waitfriends = Friendship.objects.filter(to_user_id=request.user.id, is_friend=False).select_related('from_user')
   myrequests = Friendship.objects.filter(from_user_id=request.user.id, is_friend=False).select_related('to_user')
-  friends = Friendship.objects.filter(
-    Q(to_user_id=request.user.id, is_friend=True) | Q(from_user_id=request.user.id, is_friend=True)
+  
+  # 내가 to_user일 경우
+  friends_as_to_user = Friendship.objects.filter(
+    to_user_id=request.user.id, 
+    is_friend=True
   ).select_related('from_user')
+  # 내가 from_user일 경우
+  friends_as_from_user = Friendship.objects.filter(
+    from_user_id=request.user.id, 
+    is_friend=True
+  ).select_related('to_user')
+
+  # 위의 두 경우를 합쳐서 friends로
+  friends = friends_as_to_user | friends_as_from_user
 
   if waitfriends.exists():
     messages.success(request, f'{waitfriends.count()}개의 미확인 친구신청이 있습니다!')
