@@ -23,13 +23,14 @@
     <a href="{% url 'accounts:logout' %}">
       <li>로그아웃</li>
     </a>
-    {% endif %}
+    {% else %}
     <a href="{% url 'accounts:signup' %}">
       <li class="{% if request.path == '/accounts/sign-up/' %}current-page{% endif %}">회원가입</li>
     </a>
     <a href="{% url 'accounts:login' %}">
       <li class="{% if request.path == '/accounts/log-in/' %}current-page{% endif %}">로그인</li>
     </a>
+    {% endif %}
   </ul>
   
   <a href="#" class="navbar__toggleBtn">
