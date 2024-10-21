@@ -92,16 +92,19 @@ def addfriend(request):
 @login_required
 def myfriends(request):
   waitfriends = Friendship.objects.filter(to_user_id=request.user.id, is_friend=False).select_related('from_user')
+  myrequests = Friendship.objects.filter(from_user_id=request.user.id, is_friend=False).select_related('to_user')
   friends = Friendship.objects.filter(
     Q(to_user_id=request.user.id, is_friend=True) | Q(from_user_id=request.user.id, is_friend=True)
   ).select_related('from_user')
 
   if waitfriends.exists():
     messages.success(request, f'{waitfriends.count()}개의 미확인 친구신청이 있습니다!')
+
   
   context = {
     'waitfriends': waitfriends,
     'friends': friends,
+    'myrequests': myrequests,
   }
   return render(request, 'friends/myfriends.html', context)
 
@@ -116,8 +119,8 @@ def acceptfriend(request, friend_id):
       messages.success(request, '친구 신청을 수락했습니다.')
     except Friendship.DoesNotExist:
       messages.error(request, '친구 신청이 존재하지 않거나 이미 수락되었습니다.')
-    return redirect('friends:myfriends')
-  return redirect('friends:myfriends')
+    return redirect('friends:my_friends')
+  return redirect('friends:my_friends')
 
 
 # 친구 거절 로직
@@ -129,5 +132,34 @@ def rejectfriend(request, friend_id):
       messages.success(request, '친구 신청을 거절했습니다.')
     except Friendship.DoesNotExist:
       messages.error(request, '친구 신청이 존재하지 않습니다.')
+    return redirect('friends:my_friends')
+  return redirect('friends:my_friends')
+
+
+# 친구신청 취소 로직
+def cancelfriend(request, friend_id):
+  if request.method == 'POST':
+    try:
+      friend_request = Friendship.objects.get(from_user_id=request.user.id, to_user_id=friend_id, is_friend=False)
+      friend_request.delete()
+      messages.success(request, '친구 신청을 취소했습니다.')
+    except Friendship.DoesNotExist:
+      messages.error(request, '친구 신청이 존재하지 않습니다.')
+    return redirect('friends:my_friends')
+  return redirect('friends:my_friends')
+
+
+# 친구 삭제 로직
+def deletefriend(request, friend_id):
+  if request.method == 'POST':
+    try:
+      friendship = Friendship.objects.get(
+        Q(from_user_id=request.user.id, to_user_id=friend_id, is_friend=True) |
+        Q(from_user_id=friend_id, to_user_id=request.user.id, is_friend=True)
+      )
+      friendship.delete()
+      messages.success(request, '친구를 삭제했습니다.')
+    except Friendship.DoesNotExist:
+      messages.error(request, '친구가 존재하지 않습니다.')
     return redirect('friends:my_friends')
   return redirect('friends:my_friends')
