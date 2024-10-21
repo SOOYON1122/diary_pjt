@@ -14,6 +14,7 @@
     {% for friend in friends %}
       <li>{{ friend.from_user.nickname }} ({{ friend.from_user.username }})<br>
       마지막 로그인: {{ friend.from_user.last_login | date:"y년m월d일  H시i분"}}</li>
+      <button onclick="deleteFriendConfirm('{{friend.from_user.id}}', '{{friend.from_user.nickname}}')">삭제</button>
     {% endfor %}
   </ul>
 
@@ -32,6 +33,17 @@
     {% endfor %}
   </ul>
 
+  <h3>내가 신청한 목록</h3>
+  <ul>
+    {% for myreq in myrequests %}
+      <li>{{ myreq.to_user.nickname }} ({{ myreq.to_user.username }})</li>
+      <form action="{% url 'friends:friend_request_cancel' myreq.to_user.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">신청취소</button>
+      </form>
+    {% endfor %}
+  </ul>
+
 </main>
 {% endblock content %}
 {% block js %}
@@ -43,5 +55,7 @@
     {% endfor %}
   </script>
 {% endif %}
+
+<script src="{% static "js/deletefriend.js" %}"></script>
 
 {% endblock js %}
