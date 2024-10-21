@@ -92,7 +92,7 @@ def addfriend(request):
 @login_required
 def myfriends(request):
   waitfriends = Friendship.objects.filter(to_user_id=request.user.id, is_friend=False).select_related('from_user')
-  myrequests = waitfriends = Friendship.objects.filter(from_user_id=request.user.id, is_friend=False).select_related('to_user')
+  myrequests = Friendship.objects.filter(from_user_id=request.user.id, is_friend=False).select_related('to_user')
   friends = Friendship.objects.filter(
     Q(to_user_id=request.user.id, is_friend=True) | Q(from_user_id=request.user.id, is_friend=True)
   ).select_related('from_user')
