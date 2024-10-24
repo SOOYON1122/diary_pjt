@@ -1,0 +1,44 @@
+.mydiary-main {
+  width: 80%;
+  min-width: 500px;
+  height: calc(100vh - 90px);
+  margin: 0 auto;
+  padding-top: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.mydiary-article {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-list {
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap; /* 줄이 넘어가도록 설정 */
+  justify-content: space-between; /* 카드 간격을 자동으로 조정 */
+  gap: 20px; /* 카드 사이에 간격 */
+}
+
+.diary-card {
+  width: 250px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap:20px;
+}
+
+.diary-card > img {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+}

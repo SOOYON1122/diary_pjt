@@ -8,7 +8,7 @@ import os
 def note_image_path(instance, filename):
   ext = filename.split('.')[-1]
   filename = f'{uuid.uuid4()}.{ext}'
-  return f'notes/{instance.user.username}/{filename}'
+  return f'diary/{instance.user.username}/{filename}'
 
 
 # 다이어리 모델
@@ -61,15 +61,6 @@ class Note(models.Model):
   def __str__(self):
     return self.note_title
 
-  def clean(self):
-    super().clean()
-    if self.diary.user != self.user and not self.diary.diary_friends.filter(id=self.user.id).exists():
-      raise ValidationError("노트를 작성할 권한이 없습니다.")
-
-  def save(self, *args, **kwargs):
-    self.full_clean()
-    super().save(*args, **kwargs)
-
 
 # 노트 하나에 들어갈 이미지 모델 (최대 10장)
 class NoteImage(models.Model):
@@ -78,8 +69,16 @@ class NoteImage(models.Model):
     related_name="note_images",
     on_delete=models.CASCADE
   )
+  user = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    related_name="note_images",
+    on_delete=models.CASCADE
+  )
   image = models.ImageField(upload_to=note_image_path)
   uploaded_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    unique_together = ('note', 'image')
 
   def __str__(self):
     return f"Image for {self.note.note_title}"
@@ -92,3 +91,12 @@ class NoteImage(models.Model):
   def save(self, *args, **kwargs):
     self.full_clean()
     super().save(*args, **kwargs)
+
+
+# comment 영역 (분리 필요시, 분리)
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name = 'user_comments')
+    note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name="notes_comment")
+    content = models.CharField(max_length=125)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
