@@ -7,10 +7,20 @@
 
 {% block content %}
 <main class="creatediary-main">
-<form action="{% url 'diaries:create_diary' %}" method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{form.as_p}}
-  <input type="submit" value="다이어리생성">
-</form>
+  <form action="{% url 'diaries:create_diary' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+  
+    <div id="selected-friends"></div>
+  
+    <input type="submit" value="다이어리 생성">
+  </form>
 </main>
 {% endblock content %}
+
+{% block js %}
+
+<script src="{% static "js/creatediary.js" %}"></script>
+
+{% endblock js %}
+

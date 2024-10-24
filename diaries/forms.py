@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from .models import Diary, Note, NoteImage
+from .models import Diary, Note, NoteImage, Comment
 from friends.models import Friendship
 
 
@@ -50,7 +50,9 @@ class DiaryForm(forms.ModelForm):
 class NoteForm(forms.ModelForm):
   class Meta:
     model = Note
-    fields = ['note_title', 'note_content', 'diary']
+    fields = ('note_title', 'note_content', 'diary',)  # 'diary'를 fields에 추가
+
+  diary = forms.ModelChoiceField(queryset=Diary.objects.all(), label="다이어리 선택")
 
   def __init__(self, *args, **kwargs):
     self.current_user = kwargs.pop('user', None)
@@ -60,73 +62,42 @@ class NoteForm(forms.ModelForm):
     cleaned_data = super().clean()
     diary = cleaned_data.get('diary')
 
-    if diary:
-      if diary.user != self.current_user and not diary.diary_friends.filter(id=self.current_user.id).exists():
-        raise ValidationError("노트를 작성할 권한이 없습니다.")
+    # diary가 None인지 체크
+    if diary is None:
+      raise ValidationError("다이어리를 선택해야 합니다.")
+
+    # diary가 None이 아닌 경우만 다음 체크 수행
+    if diary.user_id != self.current_user and not diary.diary_friends.filter(id=self.current_user.id).exists():
+      raise ValidationError("노트를 작성할 권한이 없습니다.")
 
     return cleaned_data
 
 
+
 class NoteImageForm(forms.ModelForm):
-  class Meta:
-    model = NoteImage
-    fields = ['image']
+    class Meta:
+        model = NoteImage
+        fields = ('image',)  # 이미지 필드만 포함
 
-  def __init__(self, *args, **kwargs):
-    self.note = kwargs.pop('note', None)
-    super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-  def clean_image(self):
-    image = self.cleaned_data.get('image')
-    if self.note:
-      if self.note.note_images.count() >= 10:
-        raise ValidationError("노트 당 최대 10장의 이미지만 업로드할 수 있습니다.")
-    return image
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        
+        if image:
+            # 이미지 형식 체크
+            if not image.name.endswith(('.png', '.jpg', '.jpeg')):
+                raise ValidationError("이미지는 PNG 또는 JPG 형식이어야 합니다.")
+            
+            # 이미지 크기 제한 예시 (5MB)
+            if image.size > 5 * 1024 * 1024:
+                raise ValidationError("이미지 파일 크기는 5MB를 초과할 수 없습니다.")
+        
+        return image
+    
 
-
-NoteImageFormSet = inlineformset_factory(
-  Note,
-  NoteImage,
-  form=NoteImageForm,
-  extra=3,  # 초기 폼 개수
-  can_delete=True,
-  max_num=10,
-  validate_max=True
-)
-
-
-class NoteImageFormSetTest(TestCase):
-  def setUp(self):
-    self.user = User.objects.create_user(username='user', password='password')
-    self.diary = Diary.objects.create(user=self.user, diary_title='Diary', diary_content='Content', diary_category='Category')
-    self.diary.diary_friends.add(self.user)
-
-  def test_note_image_formset_valid(self):
-    note = Note.objects.create(user=self.user, diary=self.diary, note_title='Note', note_content='Content')
-    image1 = SimpleUploadedFile("image1.jpg", b"file_content", content_type="image/jpeg")
-    image2 = SimpleUploadedFile("image2.jpg", b"file_content", content_type="image/jpeg")
-    form_data = {
-      'note_images-TOTAL_FORMS': '2',
-      'note_images-INITIAL_FORMS': '0',
-      'note_images-MIN_NUM_FORMS': '0',
-      'note_images-MAX_NUM_FORMS': '10',
-      'note_images-0-image': image1,
-      'note_images-1-image': image2,
-    }
-    formset = NoteImageFormSet(data=form_data, files=request.FILES, instance=note)
-    self.assertTrue(formset.is_valid())
-  
-  def test_note_image_formset_exceeds_max(self):
-    note = Note.objects.create(user=self.user, diary=self.diary, note_title='Note', note_content='Content')
-    for i in range(10):
-      NoteImage.objects.create(note=note, image='path/to/image.jpg')
-    image11 = SimpleUploadedFile("image11.jpg", b"file_content", content_type="image/jpeg")
-    form_data = {
-      'note_images-TOTAL_FORMS': '1',
-      'note_images-INITIAL_FORMS': '10',
-      'note_images-MIN_NUM_FORMS': '0',
-      'note_images-MAX_NUM_FORMS': '10',
-      'note_images-0-image': image11,
-    }
-    formset = NoteImageFormSet(data=form_data, files=request.FILES, instance=note)
-    self.assertFalse(formset.is_valid())
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ('user', 'note',)

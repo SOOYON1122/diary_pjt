@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>일기 작성 페이지</h1>
+  <form action="{%url 'diaries:create_note' diary.pk %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.note_title.label_tag }}  <!-- 제목 레이블 -->
+    {{ form.note_title }}  <!-- 제목 입력 필드 -->
+    {% for error in form.note_title.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    {{ form.note_content.label_tag }}  <!-- 내용 레이블 -->
+    {{ form.note_content }}  <!-- 내용 입력 필드 -->
+    {% for error in form.note_content.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    {{ form.diary.label_tag }}  <!-- 다이어리 선택 레이블 -->
+    {{ form.diary }}  <!-- 다이어리 선택 필드 -->
+    {% for error in form.diary.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    <label for="image">이미지 업로드:</label>
+    <input type="file" name="image" multiple>
+    {% if form.non_field_errors %}
+      <div class="error">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% if form.non_field_errors %}
+      <div class="error">{{ form.non_field_errors }}</div>
+    {% endif %}
+    
+    <input type="submit" value="작성">
+  </form>
+
+  {% if form.non_field_errors %}
+    <div class="error">{{ form.non_field_errors }}</div>
+  {% endif %}
+{% endblock content %}

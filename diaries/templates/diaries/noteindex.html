@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block title %}
@@ -15,7 +14,7 @@ Notes
 
 {% block content %}
 <h1>Note</h1>
-<a href="{% url "notes:create" %}">[Note 쓰기]</a>
+<a href="{% url "diaries:create_note" diary.pk %}">[Note 쓰기]</a>
 <ul class="notes">
   {% for note in page_obj %}
   <article class="notes-main">
@@ -39,7 +38,7 @@ Notes
       </p>
 
       <p class="note-content">{{ note.note_content }}</p>
-      <form action="{% url 'notes:likes' note.pk %}?page={{ page_obj.number }}" method="POST">
+      <form action="{% url 'diaries:likes' note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         <input type="submit" value="{% if request.user in note.like_users.all %}❤{% else %}🤍{% endif %}">
       </form>
@@ -63,7 +62,7 @@ Notes
           </li>
         {% endfor %}
       </ul>
-      <form action="{% url "notes:comments_create" note.pk %}?page={{ page_obj.number }}" method="POST">
+      <form action="{% url "diaries:comments_create" note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         {{ comment_form.as_p }}
         <input type="submit" value="댓글 생성">
