@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('diaries/', include('diaries.urls')),
     path('friends/', include('friends.urls')),
+    path('notes/', include('notes.urls')),
 ]
 
 # MEDIA_URL에 대한 설정 추가
