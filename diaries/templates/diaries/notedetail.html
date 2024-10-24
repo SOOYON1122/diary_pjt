@@ -7,8 +7,7 @@ Notes
 
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static "css/style.css" %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+    <link rel="stylesheet" href="{% static "css/notedetail.css" %}">
 {% endblock styles %}
 
 
@@ -38,7 +37,7 @@ Notes
       </p>
 
       <p class="note-content">{{ note.note_content }}</p>
-      <form action="{% url 'diaries:likes' note.pk %}?page={{ page_obj.number }}" method="POST">
+      <form action="{% url 'diaries:likes' diary.pk note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         <input type="submit" value="{% if request.user in note.like_users.all %}❤{% else %}🤍{% endif %}">
       </form>
@@ -46,12 +45,12 @@ Notes
     
     <section class="notes-comment">
       <ul>
-        {% for comment in note.comment_set.all %}
+        {% for comment in note.notes_comment.all %}
           <li>
             {% comment %} 댓글 출력 {% endcomment %}
             <span>{{ comment.pk }} | {{ comment.user.username }} : {{ comment.content }}</span>
             {% comment %} <span>{{ comment.user.username }}: {{ comment.content }}</span> {% endcomment %}
-            <form action="{% url "notes:comments_delete" comment.pk %}?page={{ page_obj.number }}" method="POST">
+            <form action="{% url "diaries:comments_delete" diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
               {% csrf_token %}
               <input type="submit" value="댓글 삭제">
             </form>
@@ -62,7 +61,7 @@ Notes
           </li>
         {% endfor %}
       </ul>
-      <form action="{% url "diaries:comments_create" note.pk %}?page={{ page_obj.number }}" method="POST">
+      <form action="{% url "diaries:comments_create" diary.pk note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         {{ comment_form.as_p }}
         <input type="submit" value="댓글 생성">

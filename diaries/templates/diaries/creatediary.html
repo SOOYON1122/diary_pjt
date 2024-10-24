@@ -11,16 +11,25 @@
     {% csrf_token %}
     {{ form.as_p }}
   
+    <div>
+      <h3>친구 목록</h3>
+      <ul id="friend-list">
+        <!-- 친구 목록은 서버에서 렌더링됩니다 -->
+        {% for friend in friends %}
+          <li class="friend-item" data-id="{{ friend.id }}">{{ friend.nickname }} ({{ friend.username }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+    <!-- 선택된 친구의 ID를 담는 숨겨진 input 필드 -->
+    <input type="hidden" id="selected-friend-ids" name="diary_friends" value="">
     <div id="selected-friends"></div>
-  
-    <input type="submit" value="다이어리 생성">
+    
+    <button type="submit">다이어리 생성</button>
   </form>
 </main>
 {% endblock content %}
 
 {% block js %}
-
 <script src="{% static "js/creatediary.js" %}"></script>
-
 {% endblock js %}
-

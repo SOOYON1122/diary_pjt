@@ -13,14 +13,16 @@
     <h3> 내가 대장 다람쥐인 다이어리 </h3>
     <div class="card-list">
       {% for odiary in owner_diaries %}
+      <a href="{% url 'diaries:note_detail' odiary.pk %}">
         <div class="diary-card">
           {% if odiary.diary_img %}
-          <img src="media/{{ odiary.diary_img.url }}" alt="다이어리 이미지">
+          <img src="{{ odiary.diary_img.url }}" alt="다이어리 이미지">
           {% else %}
           <img src="{% static "img/dotori_default_img.png" %}" alt="다이어리 기본 이미지">
           {% endif %}
           {{ odiary.diary_title }}
         </div>
+      </a>
       {% endfor %}
     </div>
   </article>
@@ -29,14 +31,16 @@
     <h3> 내가 멤버 다람쥐인 다이어리 </h3>
     <div class="card-list">
       {% for mdiary in member_diaries %}
+      <a href="{% url 'diaries:note_detail' mdiary.pk %}">
       <div class="diary-card">
         {% if mdiary.diary_img %}
-        <img src="media/{{ mdiary.diary_img.url }}" alt="다이어리 이미지">
+        <img src="{{ mdiary.diary_img.url }}" alt="다이어리 이미지">
         {% else %}
         <img src="{% static "img/dotori_default_img.png" %}" alt="다이어리 기본 이미지">
         {% endif %}
         {{ mdiary.diary_title }}
       </div>
+      </a>
       {% endfor %}
     </div>
   </article>

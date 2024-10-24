@@ -61,20 +61,16 @@ class Note(models.Model):
   def __str__(self):
     return self.note_title
 
-  def clean(self):
-    super().clean()
-    if self.diary.user != self.user and not self.diary.diary_friends.filter(id=self.user.id).exists():
-      raise ValidationError("노트를 작성할 권한이 없습니다.")
-
-  def save(self, *args, **kwargs):
-    self.full_clean()
-    super().save(*args, **kwargs)
-
 
 # 노트 하나에 들어갈 이미지 모델 (최대 10장)
 class NoteImage(models.Model):
   note = models.ForeignKey(
     Note,
+    related_name="note_images",
+    on_delete=models.CASCADE
+  )
+  user = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
     related_name="note_images",
     on_delete=models.CASCADE
   )
