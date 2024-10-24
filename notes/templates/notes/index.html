@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Notes
+{% endblock title %}
+
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+{% endblock styles %}
+
+
+{% block content %}
+<h1>Note</h1>
+<a href="{% url "notes:create" %}">[Note 쓰기]</a>
+<ul class="notes">
+  {% for note in page_obj %}
+  <article class="notes-main">
+    <li>
+      <p class="note-date" data-date="{{ note.created_at|date:"Y-m-d" }}">
+        <span class="date-text">{{ note.created_at }}</span>
+      </p>
+
+      <p class="note-picture">
+        {% if note.note_images.all %}
+          <div class="image-slider">
+            {% for image in note.note_images.all %}
+              <div class="slide">
+                <img src="{{ image.image.url }}" alt="note image" class="slider-image">
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <img src="{% static 'img/default.png' %}" alt="basic image" class="slider-image">
+        {% endif %}
+      </p>
+
+      <p class="note-content">{{ note.note_content }}</p>
+      <form action="{% url 'notes:likes' note.pk %}?page={{ page_obj.number }}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="{% if request.user in note.like_users.all %}❤{% else %}🤍{% endif %}">
+      </form>
+    </li>
+    
+    <section class="notes-comment">
+      <ul>
+        {% for comment in note.comment_set.all %}
+          <li>
+            {% comment %} 댓글 출력 {% endcomment %}
+            <span>{{ comment.pk }} | {{ comment.user.username }} : {{ comment.content }}</span>
+            {% comment %} <span>{{ comment.user.username }}: {{ comment.content }}</span> {% endcomment %}
+            <form action="{% url "notes:comments_delete" comment.pk %}?page={{ page_obj.number }}" method="POST">
+              {% csrf_token %}
+              <input type="submit" value="댓글 삭제">
+            </form>
+          </li>
+        {% empty %}
+          <li>
+            <span>첫 번째 댓글을 작성해보세요.</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <form action="{% url "notes:comments_create" note.pk %}?page={{ page_obj.number }}" method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <input type="submit" value="댓글 생성">
+      </form>
+    </section>
+    
+  </article>
+  {% empty %}
+    <li>아직 작성한 일기가 없습니다.</li>
+  {% endfor %}
+</ul>
+
+<div id="calendar" class="calendar"></div>
+
+<div class="pagination-container">
+  <div class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; 첫 페이지</a>
+        <a href="?page={{ page_obj.previous_page_number }}">이전</a>
+      {% endif %}
+      <span class="current">
+        페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">다음</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">마지막 페이지 &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+</div>
+{% endblock content %}
+
+
+
+{% block js %}{% endblock js %}
