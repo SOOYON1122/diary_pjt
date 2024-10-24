@@ -1,3 +1,9 @@
+h1 {
+  margin-inline-start: auto;
+  padding-top: 100px;
+}
+
+
 .notes {
     list-style-type: none;
   }
