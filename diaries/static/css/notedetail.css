@@ -114,3 +114,9 @@ h1 {
     object-fit: cover;
   }
   
+
+  .note-picture img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+  }

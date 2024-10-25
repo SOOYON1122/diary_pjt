@@ -8,6 +8,7 @@ Notes
 
 {% block styles %}
     <link rel="stylesheet" href="{% static "css/notedetail.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
 {% endblock styles %}
 
 
@@ -32,7 +33,7 @@ Notes
             {% endfor %}
           </div>
         {% else %}
-          <img src="{% static 'img/default.png' %}" alt="basic image" class="slider-image">
+          <img src="{% static 'img/dotori_logo.png' %}" alt="basic image" class="slider-image">
         {% endif %}
       </p>
 
@@ -48,7 +49,7 @@ Notes
         {% for comment in note.notes_comment.all %}
           <li>
             {% comment %} 댓글 출력 {% endcomment %}
-            <span>{{ comment.pk }} | {{ comment.user.username }} : {{ comment.content }}</span>
+            <span>{{ comment.pk }} | {{ comment.user.nickname }} : {{ comment.content }}</span>
             {% comment %} <span>{{ comment.user.username }}: {{ comment.content }}</span> {% endcomment %}
             <form action="{% url "diaries:comments_delete" diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
               {% csrf_token %}
