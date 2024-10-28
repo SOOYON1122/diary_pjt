@@ -6,18 +6,13 @@
 {% endblock styles %}
 {% block content %}
 <main class="index-main">
-  <h1>로그인</h1>
+  <h1>아이디 찾기</h1>
 
-<form action="{% url 'accounts:login' %}" method="POST">
+<form action="{% url 'accounts:findid' %}" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="로그인">
 </form>
-
-<a href="{% url "accounts:findid" %}">아이디 찾기</a>
-<a href="{% url "accounts:findpw" %}">비밀번호 찾기</a>
-
-
 
 </main>
 {% endblock content %}

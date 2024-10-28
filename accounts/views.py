@@ -74,3 +74,9 @@ def update(request, user_pk):
 def delete(request, user_pk):
     request.user.delete()
     return redirect('diaries:index')
+
+def findid(request):
+    pass
+
+def findpw(request):
+    pass
