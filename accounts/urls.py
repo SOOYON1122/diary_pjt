@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+from django.contrib.auth import views as auth_views
+
 app_name = "accounts"
 
 urlpatterns = [
@@ -12,5 +14,10 @@ urlpatterns = [
     path('mypage/<int:user_pk>/delete/', views.delete, name="delete"),
 
     path('findid/', views.findid, name="findid"),
-    path('findpw/', views.findpw, name="findpw"),
+    path('testemail/', views.email, name="email"),
+    
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
