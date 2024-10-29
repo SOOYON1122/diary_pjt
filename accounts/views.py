@@ -7,6 +7,10 @@ from django.contrib.auth.decorators import login_required
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from django.conf import settings
+
 # Create your views here.
 def signup(request):
     if request.user.is_authenticated:
@@ -76,7 +80,46 @@ def delete(request, user_pk):
     return redirect('diaries:index')
 
 def findid(request):
-    pass
+    context = {}
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if user is not None:
+                method_email = EmailMessage(
+                    'Your ID is in the email',
+                    str(user.username),
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                )
+                method_email.send(fail_silently=False)
+                print('success', email)
+                return render(request, 'accounts/idsent.html')
+            
+        except:
+            print('fail', email)
+            messages.info(request, 'There is no username along with the email')
+    context = {}
+    return render(request, 'accounts/findid.html', context)
 
-def findpw(request):
-    pass
+
+# def send_email(request):
+#     subject = 'message'
+#     to = ['example@gmail.com']
+#     from_email = settings.EMAIL_HOST_USER,
+#     message = '이메일 테스트'
+#     EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send(fail_silently=False)
+
+
+# views.py
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import redirect
+
+def email(request):
+    subject = 'Thank you for registering to our site'
+    message = 'It means a world to us'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['example@gmail.com']
+    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+    return redirect('accounts:findid')

@@ -6,13 +6,7 @@
 {% endblock styles %}
 {% block content %}
 <main class="index-main">
-  <h1>아이디 찾기</h1>
-
-<form action="{% url 'accounts:findid' %}" method="POST">
-    {% csrf_token %}
-    Email: <input type="email" name='email'>
-    <input type="submit" value="확인">
-</form>
+  <h1>아이디를 이메일로 전송했습니다.</h1>
 
 </main>
 {% endblock content %}
