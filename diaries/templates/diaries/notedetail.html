@@ -28,7 +28,11 @@ Notes
           <div class="image-slider">
             {% for image in note.note_images.all %}
               <div class="slide">
-                <img src="{{ image.image.url }}" alt="note image" class="slider-image">
+                {% if image.image %}  {# 이미지가 존재하는지 체크 #}
+                  <img src="{{ image.image.url }}" alt="note image" class="slider-image">
+                {% else %}
+                  <img src="{% static 'img/dotori_logo.png' %}" alt="basic image" class="slider-image">  {# 기본 이미지 사용 #}
+                {% endif %}
               </div>
             {% endfor %}
           </div>

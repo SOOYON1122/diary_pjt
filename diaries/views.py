@@ -8,7 +8,7 @@ from django.contrib import messages
 
 from .models import Diary, Note, NoteImage, Comment
 from friends.models import Friendship
-from .forms import DiaryForm, NoteForm, CommentForm
+from .forms import DiaryForm, NoteForm, CommentForm, NoteImageFormSet
 
 User = get_user_model()
 
@@ -96,59 +96,70 @@ def notelist(request, diary_pk):
 
 @login_required
 def notedetail(request, diary_pk):
-    diary = Diary.objects.get(pk=diary_pk)
-    date_filter = request.GET.get('date')
-    if date_filter:
-        notes = Note.objects.filter(created_at__date=date_filter)
-    else:
-        notes = Note.objects.all()
+  diary = Diary.objects.get(pk=diary_pk)
+  date_filter = request.GET.get('date')
+  if date_filter:
+      notes = Note.objects.filter(created_at__date=date_filter)
+  else:
+      notes = Note.objects.all()
 
-    paginator = Paginator(notes, 1)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+  paginator = Paginator(notes, 1)
+  page_number = request.GET.get('page')
+  page_obj = paginator.get_page(page_number)
 
-    comment_form = CommentForm()
-    context = {
-        'page_obj' : page_obj,
-        'comment_form': comment_form,
-        'diary': diary,
-    }
-    return render(request, 'diaries/notedetail.html', context)
+  comment_form = CommentForm()
+  context = {
+      'page_obj' : page_obj,
+      'comment_form': comment_form,
+      'diary': diary,
+  }
+  return render(request, 'diaries/notedetail.html', context)
 
 
 @login_required
 def createnote(request, diary_pk):
-    diary = get_object_or_404(Diary, pk=diary_pk)  # 일기를 안전하게 가져옵니다.
-    
-    if request.method == 'POST':
-        form = NoteForm(request.POST, request.FILES)
+  diary = get_object_or_404(Diary, pk=diary_pk)
 
-        if form.is_valid():
-            note = form.save(commit=False)
-            note.diary = diary
-            note.user = request.user
-            note.save()
+  if request.method == 'POST':
+    form = NoteForm(request.POST)
+    formset = NoteImageFormSet(request.POST, request.FILES)
 
-            images = request.FILES.getlist('image')  # 여러 개의 이미지 가져오기
-            
-            # 이미지 개수 확인
-            if len(images) > 10:
-                form.add_error(None, "이미지는 최대 10개까지만 업로드할 수 있습니다.")
-            else:
-                for image in images:
-                    NoteImage.objects.create(note=note, image=image, user=request.user)  # 각 이미지를 저장
-                messages.success(request, "노트가 성공적으로 생성되었습니다.")  # 성공 메시지 추가
-                return redirect('diaries:note_detail', diary.pk)
-        else:
-            messages.error(request, "폼에 오류가 있습니다. 다시 시도해주세요.")  # 에러 메시지 추가
+    if form.is_valid() and formset.is_valid():
+      if not form.is_valid():
+        print(form.errors)  # 디버깅용 출력
+      if not formset.is_valid():
+        print(formset.errors)  # 디버깅용 출력
+      note = form.save(commit=False)
+      note.diary_id = diary.id
+      note.user_id = request.user.id
+      note.save()  # Note 객체를 먼저 저장합니다.
+
+      # 이제 note 인스턴스에 pk가 생성되었으므로 formset을 연결합니다.
+      formset.instance = note
+      
+      # 이제 formset의 유효성을 검사합니다.
+      
+      for note_image_form in formset:
+        if note_image_form.cleaned_data.get('image'):  # 이미지가 비어있지 않은 경우에만 저장
+          note_image_instance = note_image_form.save(commit=False)  # 커밋하지 않고 인스턴스 생성
+          note_image_instance.user_id = request.user.id  # 사용자 설정
+          note_image_instance.note_id = note.id  # 방금 저장한 노트와 연결
+          note_image_instance.save()  # 저장
+
+      messages.success(request, "노트가 성공적으로 생성되었습니다.")
+      return redirect('diaries:note_detail', diary.pk)
     else:
-        form = NoteForm()
+      messages.error(request, "노트 작성 중 오류가 발생했습니다. 다시 시도해주세요.")
+  else:
+    form = NoteForm()
+    formset = NoteImageFormSet()
 
-    context = {
-        'form': form,
-        'diary': diary,
-    }
-    return render(request, 'diaries/createnote.html', context)
+  context = {
+    'form': form,
+    'formset': formset,
+    'diary': diary,
+  }
+  return render(request, 'diaries/createnote.html', context)
 
 
 

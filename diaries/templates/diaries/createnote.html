@@ -1,11 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
   <h1>일기 작성 페이지</h1>
-  <form action="{%url 'diaries:create_note' diary.pk %}" method="POST" enctype="multipart/form-data">
+  <form action="{% url 'diaries:create_note' diary.pk %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
+    
+    {{ form.as_p }}  <!-- NoteForm을 렌더링 -->
+    
+    <div>
+      <label for="image">이미지 업로드 (최대 10개)</label>
+      {{ formset.management_form }}
+      {% for form in formset %}
+        <div>
+          {{ form.image.label }} {{ form.image }}  <!-- 각 이미지 필드 렌더링 -->
+        </div>
+      {% endfor %}
+    </div>
+
     <button type="submit">노트 작성</button>
   </form>
-    
 {% endblock content %}
+
+{% block js %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    alert("{{ message }}");
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock js %}
