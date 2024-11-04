@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+노트 수정
+{% endblock title %}
+
+{% block content %}
+<h1>노트 수정</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">수정 완료</button>
+</form>
+<a href="{% url 'diaries:note_detail' diary.pk note.pk %}">취소</a>
+{% endblock content %}

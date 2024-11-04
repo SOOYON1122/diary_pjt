@@ -7,7 +7,11 @@ from django.contrib.auth.decorators import login_required
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
-# Create your views here.
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from django.conf import settings
+
+# 회원가입
 def signup(request):
     if request.user.is_authenticated:
         return redirect('diaries:index')
@@ -25,7 +29,7 @@ def signup(request):
     }
     return render(request, 'accounts/signup.html', context)
     
-
+# 로그인
 def login(request):
     if request.user.is_authenticated:
         return redirect('diaries:index')
@@ -42,15 +46,18 @@ def login(request):
     }
     return render(request, 'accounts/login.html', context)
     
+# 로그아웃
 @login_required
 def logout(request):
     auth_logout(request)
     return redirect('diaries:index')
 
+# 마이페이지 (로그인되어야만 입장 가능)
 @login_required
 def mypage(request, user_pk):
     return render(request, 'accounts/mypage.html')
 
+# 회원 정보 수정, 비밀번호 변경까지 함께
 @login_required
 def update(request, user_pk):
     if request.method == "POST":
@@ -70,7 +77,53 @@ def update(request, user_pk):
     }
     return render(request, 'accounts/update.html', context)
 
+# 회원 탈퇴
 @login_required
 def delete(request, user_pk):
     request.user.delete()
     return redirect('diaries:index')
+
+def findid(request):
+    context = {}
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if user is not None:
+                method_email = EmailMessage(
+                    'Your ID is in the email',
+                    str(user.username),
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                )
+                method_email.send(fail_silently=False)
+                print('success', email)
+                return render(request, 'accounts/idsent.html')
+            
+        except:
+            print('fail', email)
+            messages.info(request, 'There is no username along with the email')
+    context = {}
+    return render(request, 'accounts/findid.html', context)
+
+
+# def send_email(request):
+#     subject = 'message'
+#     to = ['example@gmail.com']
+#     from_email = settings.EMAIL_HOST_USER,
+#     message = '이메일 테스트'
+#     EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send(fail_silently=False)
+
+
+# views.py
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import redirect
+
+def email(request):
+    subject = 'Thank you for registering to our site'
+    message = 'It means a world to us'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['example@gmail.com']
+    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+    return redirect('accounts:findid')

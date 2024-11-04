@@ -5,15 +5,19 @@
 Notes
 {% endblock title %}
 
-
 {% block styles %}
     <link rel="stylesheet" href="{% static "css/notedetail.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
 {% endblock styles %}
 
-
 {% block content %}
-<h1>Note</h1>
-<a href="{% url "diaries:create_note" diary.pk %}">[Note 쓰기]</a>
+<h1>노트</h1>
+<a href="{% url 'diaries:create_note' diary.pk %}">[노트 쓰기]</a>
+
+<!-- 다이어리 제목 및 내용 추가 -->
+<h2>{{ diary.diary_title }}</h2>
+<p>{{ diary.diary_content }}</p>
+
 <ul class="notes">
   {% for note in page_obj %}
   <article class="notes-main">
@@ -27,12 +31,12 @@ Notes
           <div class="image-slider">
             {% for image in note.note_images.all %}
               <div class="slide">
-                <img src="{{ image.image.url }}" alt="note image" class="slider-image">
+                <img src="{{ image.image.url }}" alt="노트 이미지" class="slider-image">
               </div>
             {% endfor %}
           </div>
         {% else %}
-          <img src="{% static 'img/default.png' %}" alt="basic image" class="slider-image">
+          <img src="{% static 'img/dotori_logo.png' %}" alt="기본 이미지" class="slider-image">
         {% endif %}
       </p>
 
@@ -42,15 +46,13 @@ Notes
         <input type="submit" value="{% if request.user in note.like_users.all %}❤{% else %}🤍{% endif %}">
       </form>
     </li>
-    
+
     <section class="notes-comment">
       <ul>
         {% for comment in note.notes_comment.all %}
           <li>
-            {% comment %} 댓글 출력 {% endcomment %}
-            <span>{{ comment.pk }} | {{ comment.user.username }} : {{ comment.content }}</span>
-            {% comment %} <span>{{ comment.user.username }}: {{ comment.content }}</span> {% endcomment %}
-            <form action="{% url "diaries:comments_delete" diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
+            <span>{{ comment.pk }} | {{ comment.user.nickname }} : {{ comment.content }}</span>
+            <form action="{% url 'diaries:comments_delete' diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
               {% csrf_token %}
               <input type="submit" value="댓글 삭제">
             </form>
@@ -61,13 +63,13 @@ Notes
           </li>
         {% endfor %}
       </ul>
-      <form action="{% url "diaries:comments_create" diary.pk note.pk %}?page={{ page_obj.number }}" method="POST">
+      <form action="{% url 'diaries:comments_create' diary.pk note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         {{ comment_form.as_p }}
         <input type="submit" value="댓글 생성">
       </form>
     </section>
-    
+
   </article>
   {% empty %}
     <li>아직 작성한 일기가 없습니다.</li>
@@ -95,6 +97,5 @@ Notes
 </div>
 {% endblock content %}
 
-
-
 {% block js %}{% endblock js %}
+
