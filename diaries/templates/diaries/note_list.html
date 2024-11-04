@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Note List
+{% endblock title %}
+
+{% block content %}
+<h1>노트 목록</h1>
+<a href="{% url 'diaries:create_note' diary.pk %}">[노트 작성하기]</a>
+<ul>
+  {% for note in page_obj %}
+    <li>
+      <a href="{% url 'diaries:note_detail' diary.pk note.pk %}">{{ note.note_content }}</a>
+      {% if request.user == note.user %}
+        <form action="{% url 'diaries:delete_note' diary.pk note.pk %}" method="post" style="display:inline;" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+          {% csrf_token %}
+          <button type="submit">삭제</button>
+        </form>
+      {% endif %}
+      {% if request.user == note.user %}
+        <button>
+          <a href="{% url 'diaries:edit_note' diary.pk note.pk %}">수정</a>
+        </button>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>작성된 노트가 없습니다.</li>
+  {% endfor %}
+</ul>
+
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+      <a href="?page=1">&laquo; 처음</a>
+      <a href="?page={{ page_obj.previous_page_number }}">이전</a>
+    {% endif %}
+
+    <span class="current">
+      페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">다음</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}">맨 끝 &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    alert("{{ message }}");
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock js %}
