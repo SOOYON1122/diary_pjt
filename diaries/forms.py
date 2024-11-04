@@ -51,10 +51,9 @@ class DiaryForm(forms.ModelForm):
     return friend_ids
 
 class NoteForm(forms.ModelForm):
-    class Meta:
-        model = Note
-        fields = ['note_title', 'note_content']
-
+  class Meta:
+      model = Note
+      fields = ['note_title', 'note_content']
 
 class NoteImageForm(forms.ModelForm):
     class Meta:

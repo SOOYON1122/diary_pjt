@@ -37,7 +37,7 @@ Notes
 
             </div>
         {% else %}
-            <img src="{% static 'img/dotori_logo.png' %}" alt="기본 이미지" class="slider-image">
+          <img src="{% static 'img/dotori_logo.png' %}" alt="basic image" class="slider-image">
         {% endif %}
       </div>
 
@@ -71,8 +71,11 @@ Notes
       <ul>
         {% for comment in note.notes_comment.all %}
           <li>
+
+            {% comment %} 댓글 출력 {% endcomment %}
             <span>{{ comment.pk }} | {{ comment.user.nickname }} : {{ comment.content }}</span>
-            <form action="{% url 'diaries:comments_delete' diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
+            {% comment %} <span>{{ comment.user.username }}: {{ comment.content }}</span> {% endcomment %}
+            <form action="{% url "diaries:comments_delete" diary.pk note.pk comment.pk %}?page={{ page_obj.number }}" method="POST">
               {% csrf_token %}
               <input type="submit" value="댓글 삭제">
             </form>
