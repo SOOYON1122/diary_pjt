@@ -8,43 +8,63 @@ Notes
 {% block styles %}
     <link rel="stylesheet" href="{% static "css/notedetail.css" %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock styles %}
 
 {% block content %}
-<h1>노트</h1>
-<a href="{% url 'diaries:create_note' diary.pk %}">[노트 쓰기]</a>
-
-<!-- 다이어리 제목 및 내용 추가 -->
 <h2>{{ diary.diary_title }}</h2>
 <p>{{ diary.diary_content }}</p>
 
+<a href="{% url 'diaries:note_list' diary.pk %}">[NoteList]</a>
+
 <ul class="notes">
-  {% for note in page_obj %}
   <article class="notes-main">
     <li>
       <p class="note-date" data-date="{{ note.created_at|date:"Y-m-d" }}">
         <span class="date-text">{{ note.created_at }}</span>
       </p>
 
-      <p class="note-picture">
+      <div class="note-picture">
         {% if note.note_images.all %}
-          <div class="image-slider">
-            {% for image in note.note_images.all %}
-              <div class="slide">
-                <img src="{{ image.image.url }}" alt="노트 이미지" class="slider-image">
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <img src="{% static 'img/dotori_logo.png' %}" alt="기본 이미지" class="slider-image">
-        {% endif %}
-      </p>
+            <div class="image-slider">
+                <div class="slides">
+                    {% for image in note.note_images.all %}
+                        <div class="slide">
+                            <img src="{{ image.image.url }}" alt="노트 이미지" class="slider-image">
+                        </div>
+                    {% endfor %}
+                </div>
 
-      <p class="note-content">{{ note.note_content }}</p>
+            </div>
+        {% else %}
+            <img src="{% static 'img/dotori_logo.png' %}" alt="기본 이미지" class="slider-image">
+        {% endif %}
+      </div>
+
+      <div class="button-container">
+        <button class="prev">❮</button>
+        <button class="next">❯</button>
+      </div>
+
+
+      <div class="note-content">
+        <p>{{ note.note_content }}</p>
+      </div>
+
       <form action="{% url 'diaries:likes' diary.pk note.pk %}?page={{ page_obj.number }}" method="POST">
         {% csrf_token %}
         <input type="submit" value="{% if request.user in note.like_users.all %}❤{% else %}🤍{% endif %}">
       </form>
+
+      {% if request.user == note.user %}
+          <form action="{% url 'diaries:delete_note' diary.pk note.pk %}" method="post" style="display:inline;" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+              {% csrf_token %}
+              <button type="submit" class="delete-button">삭제</button>
+          </form>
+          <form action="{% url 'diaries:edit_note' diary.pk note.pk %}" method="get" style="display:inline;">
+              <button type="submit" class="edit-button">수정</button>
+          </form>
+      {% endif %}
     </li>
 
     <section class="notes-comment">
@@ -69,33 +89,42 @@ Notes
         <input type="submit" value="댓글 생성">
       </form>
     </section>
-
   </article>
-  {% empty %}
-    <li>아직 작성한 일기가 없습니다.</li>
-  {% endfor %}
 </ul>
 
-<div id="calendar" class="calendar"></div>
-
-<div class="pagination-container">
-  <div class="pagination">
-    <span class="step-links">
-      {% if page_obj.has_previous %}
-        <a href="?page=1">&laquo; 첫 페이지</a>
-        <a href="?page={{ page_obj.previous_page_number }}">이전</a>
-      {% endif %}
-      <span class="current">
-        페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
-      </span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">다음</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}">마지막 페이지 &raquo;</a>
-      {% endif %}
-    </span>
-  </div>
-</div>
 {% endblock content %}
 
-{% block js %}{% endblock js %}
+{% block js %}
+<script>
+$(document).ready(function() {
+    let currentIndex = 0;
+    const slides = $('.slide');
+    const totalSlides = slides.length;
 
+    function showSlide(index) {
+        slides.hide();
+        slides.eq(index).show();
+    }
+
+    $('.next').click(function() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        showSlide(currentIndex);
+    });
+
+    $('.prev').click(function() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        showSlide(currentIndex);
+    });
+
+    showSlide(currentIndex);
+});
+</script>
+
+{% if messages %}
+<script>
+  {% for message in messages %}
+    alert("{{ message }}");
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock js %}

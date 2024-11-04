@@ -85,8 +85,6 @@ class NoteImage(models.Model):
 
   def clean(self):
     super().clean()
-    if self.note.note_images.count() >= 10:
-      raise ValidationError("노트 당 최대 10장의 이미지만 업로드할 수 있습니다.")
 
   def save(self, *args, **kwargs):
     self.full_clean()
