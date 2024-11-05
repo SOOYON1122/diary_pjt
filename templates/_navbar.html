@@ -17,7 +17,7 @@
     <a href="{% url 'friends:my_friends' %}">
       <li class="{% if request.path == '/friends/my-friends/' %}current-page{% endif %}">친구목록</li>
     </a>
-    <a href="{% url 'accounts:mypage' user.pk%}">
+    <a href="{% url 'accounts:mypage' user.username%}">
       <li class="{% if request.path == '/accounts/my-page/' %}current-page{% endif %}">마이페이지</li>
     </a>
     <a href="{% url 'accounts:logout' %}">

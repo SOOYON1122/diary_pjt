@@ -16,10 +16,10 @@
   <p>{{ user.nickname }}</p>
   <ul>
     <li>
-        <a href="{% url 'accounts:update' user.pk %}">회원정보 변경</a>
+        <a href="{% url 'accounts:update' user.username %}">회원정보 변경</a>
     </li>
     <li>
-        <a href="{% url 'accounts:delete' user.pk %}">회원탈퇴</a>
+        <a href="{% url 'accounts:delete' user.username %}">회원탈퇴</a>
     </li>
   </ul>
 </main>
