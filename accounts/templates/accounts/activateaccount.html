@@ -1,0 +1,7 @@
+{% autoescape off %}
+{{ user }}님!
+
+아래 link를 눌러 등록을 마치세요.
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{% endautoescape %}

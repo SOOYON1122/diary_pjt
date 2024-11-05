@@ -19,15 +19,64 @@ def signup(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
-            auth_login(request, user)
-            return redirect('diaries:index')
+            # user = form.save()
+            # auth_login(request, user)
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+            activateEmail(request, user, form.cleaned_data.get('email'))
+            return render(request, 'accounts/emailsent.html')
     else:
         form = CustomUserCreationForm()
     context = {
         'form' : form,
     }
     return render(request, 'accounts/signup.html', context)
+
+# 활성화 이메일 보내기
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+
+from .tokens import account_activation_token
+
+def activateEmail(request, user, to_email):
+    mail_subject = 'Activate your user account.'
+    message = render_to_string('accounts/activateaccount.html', {
+        'user': user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        return render(request, 'accounts/emailsent.html')
+    else:
+        redirect('accounts:singup')
+
+from django.contrib.auth import get_user_model
+
+def activate(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+
+        # messages.success(request, '인증이 성공했습니다. 이제 로그인이 가능합니다.')
+        return redirect('accounts:login')
+    else:
+        # messages.error(request, '인증 링크가 유효하지 않습니다. 다른 이메일로 재시도해보세요.')
+    
+        return redirect('diaries:index')
     
 # 로그인
 def login(request):
@@ -54,12 +103,12 @@ def logout(request):
 
 # 마이페이지 (로그인되어야만 입장 가능)
 @login_required
-def mypage(request, user_pk):
+def mypage(request, user_username):
     return render(request, 'accounts/mypage.html')
 
 # 회원 정보 수정, 비밀번호 변경까지 함께
 @login_required
-def update(request, user_pk):
+def update(request, user_username):
     if request.method == "POST":
         form_user = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         form_password = PasswordChangeForm(request.user, request.POST)
@@ -67,7 +116,7 @@ def update(request, user_pk):
             form_user.save()
             user = form_password.save()
             update_session_auth_hash(request, user)
-            return redirect('accounts:mypage', user.pk)
+            return redirect('accounts:mypage', user.username)
     else:
         form_user = CustomUserChangeForm(instance=request.user)
         form_password = PasswordChangeForm(request.user)
@@ -79,7 +128,7 @@ def update(request, user_pk):
 
 # 회원 탈퇴
 @login_required
-def delete(request, user_pk):
+def delete(request, user_username):
     request.user.delete()
     return redirect('diaries:index')
 
@@ -98,7 +147,7 @@ def findid(request):
                 )
                 method_email.send(fail_silently=False)
                 print('success', email)
-                return render(request, 'accounts/idsent.html')
+                return render(request, 'accounts/emailsent.html')
             
         except:
             print('fail', email)
@@ -106,24 +155,15 @@ def findid(request):
     context = {}
     return render(request, 'accounts/findid.html', context)
 
+# 이메일 보내기 테스트
+# from django.core.mail import send_mail
+# from django.conf import settings
+# from django.shortcuts import redirect
 
-# def send_email(request):
-#     subject = 'message'
-#     to = ['example@gmail.com']
-#     from_email = settings.EMAIL_HOST_USER,
-#     message = '이메일 테스트'
-#     EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send(fail_silently=False)
-
-
-# views.py
-from django.core.mail import send_mail
-from django.conf import settings
-from django.shortcuts import redirect
-
-def email(request):
-    subject = 'Thank you for registering to our site'
-    message = 'It means a world to us'
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = ['example@gmail.com']
-    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
-    return redirect('accounts:findid')
+# def email(request):
+#     subject = 'Thank you for registering to our site'
+#     message = 'It means a world to us'
+#     email_from = settings.EMAIL_HOST_USER
+#     recipient_list = ['example@gmail.com']
+#     send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+#     return redirect('accounts:findid')
