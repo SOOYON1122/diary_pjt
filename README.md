@@ -17,4 +17,3 @@
 ## 4. ERD
 ![rn_image_picker_lib_temp_d9b11e86-d479-4442-b735-ae0875b91f28](https://github.com/user-attachments/assets/f2b31f18-3f72-4c54-a311-e750d15762c8)
 
-6. 
